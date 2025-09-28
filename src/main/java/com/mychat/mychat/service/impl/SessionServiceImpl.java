@@ -1,6 +1,7 @@
 package com.mychat.mychat.service.impl;
 
 import com.mychat.mychat.dto.CreateSessionRequestDTO;
+import com.mychat.mychat.dto.RenameSessionRequestDTO;
 import com.mychat.mychat.dto.SessionResponseDTO;
 import com.mychat.mychat.entity.ChatSession;
 import com.mychat.mychat.exception.NotFoundException;
@@ -61,10 +62,12 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    public void rename(String userId, UUID sessionId, String newTitle) {
+    public void rename(String userId, UUID sessionId, RenameSessionRequestDTO dto) {
         ChatSession session = chatSessionRepository.findByIdAndUserIdAndDeletedAtIsNull(sessionId, userId)
                 .orElseThrow(() -> new NotFoundException("session"));
-        session.setTitle((newTitle == null || newTitle.isBlank()) ? "New Chat" : newTitle.trim());
+
+        String title = dto.getTitle();
+        session.setTitle((title == null || title.isBlank()) ? "New Chat" : title.trim());
         session.setUpdatedAt(Instant.now());
         chatSessionRepository.save(session);
     }

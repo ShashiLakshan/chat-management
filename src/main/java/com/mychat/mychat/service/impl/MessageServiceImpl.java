@@ -47,6 +47,8 @@ public class MessageServiceImpl implements MessageService {
                 .createdAt(Instant.now())
                 .build();
 
+        messageRepository.saveAndFlush(msg);
+
         List<ContextItemDTO> items =
                 Optional.ofNullable(request.getContext()).orElse(List.of());
 
@@ -61,10 +63,18 @@ public class MessageServiceImpl implements MessageService {
                         .build())
                 .toList();
 
+        if (!toSave.isEmpty()) {
+            contextRepository.saveAll(toSave);
+        }
+
         session.setUpdatedAt(Instant.now());
         sessionRepository.save(session);
-        List<MessageContext> msgCtxList = contextRepository.findByMessage_IdIn(List.of(msg.getId()));
-        return mapper.toDTO(msg, msgCtxList);
+
+        List<MessageContext> ctxs = items.isEmpty()
+                ? List.of()
+                : contextRepository.findByMessage_IdIn(List.of(msg.getId()));
+
+        return mapper.toDTO(msg, ctxs);
     }
 
     @Override

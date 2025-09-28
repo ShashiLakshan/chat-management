@@ -2,6 +2,8 @@ package com.mychat.mychat.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
@@ -31,7 +33,8 @@ public class MessageContext {
     @Column(columnDefinition = "text", nullable = false)
     private String snippet;
 
-    @Column(name = "metadata_jsonb", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "metadata_jsonb", columnDefinition = "jsonb", nullable = false)
     private String metadataJson = "{}";
 
 }

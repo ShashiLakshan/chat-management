@@ -2,6 +2,8 @@ package com.mychat.mychat.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -35,7 +37,8 @@ public class ChatMessage {
     @Column(name = "token_usage")
     private Integer tokenUsage;
 
-    @Column(name = "metadata_jsonb", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "metadata_jsonb", columnDefinition = "jsonb", nullable = false)
     private String metadataJson = "{}";
 
     @Column(name = "created_at", nullable = false)

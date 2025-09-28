@@ -1,8 +1,16 @@
 package com.mychat.mychat.controller;
 
 import com.mychat.mychat.dto.CreateSessionRequestDTO;
+import com.mychat.mychat.dto.FavoriteSessionRequestDTO;
+import com.mychat.mychat.dto.RenameSessionRequestDTO;
 import com.mychat.mychat.dto.SessionResponseDTO;
 import com.mychat.mychat.service.SessionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,8 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -33,7 +39,14 @@ public class SessionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(resp);
     }
 
-
+    @Operation(summary = "List sessions", description = "Paginated list of active sessions for the current user.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = SessionResponseDTO.class)))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
     @GetMapping
     public ResponseEntity<Page<SessionResponseDTO>> list(
             @RequestHeader("X-User-Id") String userId,
@@ -57,10 +70,9 @@ public class SessionController {
     public ResponseEntity<Void> rename(
             @RequestHeader("X-User-Id") String userId,
             @PathVariable("id") UUID sessionId,
-            @RequestBody Map<String, String> body) {
+            @Valid @RequestBody RenameSessionRequestDTO body) {
 
-        String newTitle = Objects.requireNonNullElse(body.get("title"), "").trim();
-        sessionService.rename(userId, sessionId, newTitle);
+        sessionService.rename(userId, sessionId, body);
         return ResponseEntity.noContent().build();
     }
 
@@ -68,13 +80,11 @@ public class SessionController {
     public ResponseEntity<Void> favorite(
             @RequestHeader("X-User-Id") String userId,
             @PathVariable("id") UUID sessionId,
-            @RequestBody Map<String, Boolean> body
+            @Valid @RequestBody FavoriteSessionRequestDTO body
     ) {
-        boolean fav = Boolean.TRUE.equals(body.get("favorite"));
-        sessionService.favorite(userId, sessionId, fav);
+        sessionService.favorite(userId, sessionId, body.getFavorite());
         return ResponseEntity.noContent().build();
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(

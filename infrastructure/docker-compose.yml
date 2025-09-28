@@ -37,5 +37,17 @@ services:
     image: redis:7-alpine
     ports: ["6379:6379"]
 
+  app:
+    build: .
+    image: mychat:latest
+    env_file: .env
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_URL: jdbc:postgresql://postgres:5432/chat_management?currentSchema=${DB_SCHEMA:-chat_app}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports: [ "8080:8080" ]
+    depends_on: [ postgres, redis ]
+
 volumes:
   pg_data:
