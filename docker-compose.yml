@@ -23,6 +23,7 @@ services:
         condition: service_healthy
     environment:
       PGPASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
     entrypoint: >
       sh -c '
         echo "Ensuring schema & extension...";
