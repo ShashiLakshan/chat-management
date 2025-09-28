@@ -2,6 +2,7 @@ package com.mychat.mychat.config;
 
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.BucketConfiguration;
+import io.github.bucket4j.TokensInheritanceStrategy;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,6 +31,15 @@ public class RateLimitFilter extends OncePerRequestFilter {
     }
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/actuator/health")
+                || path.startsWith("/actuator/info")
+                || path.startsWith("/swagger-ui/")
+                || path.startsWith("/v3/api-docs/");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
@@ -42,6 +52,10 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
         String key = resolveKey(request);
         Bucket bucket = proxyManager.builder().build(key, bucketConfig);
+
+        if (props.isResetOnConfigChange()) {
+            bucket.replaceConfiguration(bucketConfig, TokensInheritanceStrategy.AS_IS);
+        }
 
         if (bucket.tryConsume(1)) {
             if (props.isHeaders()) {

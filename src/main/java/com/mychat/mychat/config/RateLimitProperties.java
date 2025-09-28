@@ -23,4 +23,6 @@ public class RateLimitProperties {
     private boolean headers = true;
 
     private String userHeader = "X-User-Id";
+
+    private boolean resetOnConfigChange = true;
 }
