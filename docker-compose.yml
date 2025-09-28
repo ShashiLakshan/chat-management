@@ -33,6 +33,18 @@ services:
       '
     restart: "no"
 
+  pgadmin:
+    image: dpage/pgadmin4:8
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+
   redis:
     image: redis:7-alpine
     ports: ["6379:6379"]
@@ -51,3 +63,4 @@ services:
 
 volumes:
   pg_data:
+  pgadmin_data:

@@ -26,8 +26,7 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
     private static final String[] WHITELIST = {
             "/swagger-ui/**",
             "/v3/api-docs/**",
-            "/actuator/health",
-            "/actuator/info",
+            "/actuator/**",
             "/favicon.ico"
     };
 
