@@ -13,6 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/v1/sessions")
 @RequiredArgsConstructor
@@ -40,4 +44,45 @@ public class SessionController {
         Page<SessionResponseDTO> page = sessionService.list(userId, favorite, q, pageable);
         return ResponseEntity.ok(page);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<SessionResponseDTO> get(
+            @RequestHeader("X-User-Id") String userId,
+            @PathVariable("id") UUID sessionId) {
+
+        return ResponseEntity.ok(sessionService.get(userId, sessionId));
+    }
+
+    @PatchMapping("/{id}/rename")
+    public ResponseEntity<Void> rename(
+            @RequestHeader("X-User-Id") String userId,
+            @PathVariable("id") UUID sessionId,
+            @RequestBody Map<String, String> body) {
+
+        String newTitle = Objects.requireNonNullElse(body.get("title"), "").trim();
+        sessionService.rename(userId, sessionId, newTitle);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/favorite")
+    public ResponseEntity<Void> favorite(
+            @RequestHeader("X-User-Id") String userId,
+            @PathVariable("id") UUID sessionId,
+            @RequestBody Map<String, Boolean> body
+    ) {
+        boolean fav = Boolean.TRUE.equals(body.get("favorite"));
+        sessionService.favorite(userId, sessionId, fav);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(
+            @RequestHeader("X-User-Id") String userId,
+            @PathVariable("id") UUID sessionId
+    ) {
+        sessionService.delete(userId, sessionId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

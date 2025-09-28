@@ -1,8 +1,7 @@
 package com.mychat.mychat.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -10,8 +9,10 @@ import java.util.UUID;
 @Table(name = "message_context")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MessageContext {
-
 
     @Id
     @GeneratedValue
