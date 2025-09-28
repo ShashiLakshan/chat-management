@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: chat_management
+    ports: ["5432:5432"]
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d chat_management"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  db-init:
+    image: postgres:16-alpine
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: root
+    entrypoint: >
+      sh -c '
+        echo "Ensuring schema & extension...";
+        psql -h postgres -U root -d chat_management -v ON_ERROR_STOP=1 \
+          -c "CREATE SCHEMA IF NOT EXISTS chat_app AUTHORIZATION root;" \
+          -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\" WITH SCHEMA chat_app;";
+        echo "Done.";
+      '
+    restart: "no"
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+volumes:
+  pg_data:
