@@ -19,7 +19,6 @@ A lightweight REST API for managing chat sessions and messages. Built with Sprin
     - [Base Path](#base-path)
     - [Endpoints](#endpoints)
 - [cURL Examples](#curl-examples)
-- [Swagger / OpenAPI](#swagger--openapi)
 
 ## Features
 
