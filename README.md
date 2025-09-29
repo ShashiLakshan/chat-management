@@ -138,9 +138,9 @@ X-API-Key: <string>      # API key for simple auth; default dev-secret (see .env
   **Body (JSON)**
 ```json
 {
-  "role": "USER",     // or "ASSISTANT"
+  "role": "USER",     # or "ASSISTANT"
   "content": "hello there",
-  "tokenUsage": 25    // optional
+  "tokenUsage": 25    # optional
 }
 ```
 
