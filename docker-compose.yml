@@ -56,11 +56,14 @@ services:
     env_file: .env
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      DB_URL: jdbc:postgresql://postgres:5432/chat_management?currentSchema=${DB_SCHEMA:-chat_app}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: chat_app
+      SPRING_JPA_PROPERTIES_HIBERNATE_HBM2DDL_CREATE_NAMESPACES: "true"
+      DB_URL: jdbc:postgresql://postgres:5432/chat_management?currentSchema=${DB_SCHEMA}
       REDIS_HOST: redis
       REDIS_PORT: 6379
     ports: [ "8080:8080" ]
-    depends_on: [ postgres, redis ]
+    depends_on: [ postgres, redis, db-init ]
 
 volumes:
   pg_data:

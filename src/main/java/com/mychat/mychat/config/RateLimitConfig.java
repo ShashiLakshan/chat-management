@@ -23,10 +23,10 @@ import java.time.Duration;
 @EnableConfigurationProperties(RateLimitProperties.class)
 public class RateLimitConfig {
 
-    @Value("${REDIS_HOST:localhost}")
+    @Value("${redis.host}")
     private String redisHost;
 
-    @Value("${REDIS_PORT:6379}")
+    @Value("${redis.port}")
     private int redisPort;
 
     @Bean(destroyMethod = "shutdown")
